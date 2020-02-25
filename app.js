@@ -52,7 +52,7 @@ const postTour = (req, res) => {
     //parse tours to string
     JSON.stringify(tours),
     err => {
-      //201 for creating new data
+      //201 for creating newId
       res.status(201).json({
         status: "success",
         data: {
