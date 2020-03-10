@@ -17,10 +17,10 @@ app.use(express.json());
 //access static files
 app.use(express.static(`${__dirname}/public`));
 
-app.use((req, res, next) => {
-  console.log('Hello From the middleware :)');
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log('Hello From the middleware :)');
+//   next();
+// });
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
