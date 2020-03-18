@@ -26,7 +26,7 @@ exports.getAllTour = async (req, res) => {
 exports.getTour = (req, res) => {
   //change data type id to int
   const id = req.params.id * 1;
-  // const tour = tours.find(el => el.id === id);
+  const tour = Tour.find(el => el.id === id);
 
   // // if (id > tours.length) {
   // if (!tour) {
