@@ -38,5 +38,13 @@ app.use('/api/v1/users', userRouter);
 // tourRouter.initialize(app);
 // userRouter.initialize(app);
 
+//Error Handle : routs not define
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `Can't find ${req.originalUrl} on this server!`
+  });
+});
+
 //Export app
 module.exports = app;
