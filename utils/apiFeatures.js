@@ -29,7 +29,7 @@ class APIFeatures {
       // console.log(sortBy);
       this.query = this.query.sort(sortBy);
     } else {
-      this.query = this.query.sort('-creatAt');
+      this.query = this.query.sort('-createdAt');
     }
 
     return this;
@@ -44,7 +44,7 @@ class APIFeatures {
       //excluding field __v
       this.query = this.query.select('-__v');
     }
-
+    // console.log(this);
     return this;
   }
 

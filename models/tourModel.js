@@ -70,10 +70,10 @@ const tourSchema = new mongoose.Schema(
       required: [true, 'A tour must have a cove image']
     },
     images: [String],
-    creatAt: {
+    createdAt: {
       type: Date,
       default: Date.now(),
-      select: true
+      select: false
     },
     startDates: [Date],
     secretTour: {
@@ -87,7 +87,7 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
-tourSchema.virtual('durationWeek').get(function() {
+tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
 
