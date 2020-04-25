@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 
-//name, email, photo, password, passwordChonfirm
+//name, email, photo, password, passwordConfrim
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     minlength: 8,
     select: false
   },
-  passwordChonfirm: {
+  passwordConfrim: {
     type: String,
     require: [true, 'Please confrim your password!'],
     validate: {
@@ -52,7 +52,14 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
 
   //Delete passwordConfrim
-  this.passwordChonfirm = undefined;
+  this.passwordConfrim = undefined;
+  next();
+});
+
+userSchema.pre('save', function(next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangeAt = Date.now() - 1000;
   next();
 });
 
