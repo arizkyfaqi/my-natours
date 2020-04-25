@@ -188,7 +188,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   //2) Check if POSTes current password is correct
   if (!user) {
-    return next(new AppError('You does not login. Please log-in.', 401));
+    return next(new AppError('You does not log-in. Please log-in.', 401));
   }
   if (!(await user.correctPassword(currentPass, user.password))) {
     return next(new AppError('Incorrect current password!', 401));
