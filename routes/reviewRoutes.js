@@ -5,10 +5,11 @@ const reviewController = require('./../controllers/reviewController');
 //Merge Params : for access params of their specific routes
 const router = express.Router({ mergeParams: true });
 
+router.use(authController.protect);
+
 router
   .route('/')
   .post(
-    authController.protect,
     authController.restricTo('user'),
     reviewController.setUserTourId,
     reviewController.createReview
@@ -18,7 +19,13 @@ router
 router
   .route('/:id')
   .get(reviewController.getOneReview)
-  .patch(reviewController.updateReview)
-  .delete(reviewController.deleteReview);
+  .patch(
+    authController.restricTo('user', 'admin'),
+    reviewController.updateReview
+  )
+  .delete(
+    authController.restricTo('user', 'admin'),
+    reviewController.deleteReview
+  );
 
 module.exports = router;

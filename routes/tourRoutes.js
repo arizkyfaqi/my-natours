@@ -16,19 +16,33 @@ router.use('/:tourId/reviews', reviewRouts);
 router
   .route('/top-5-cheaps')
   .get(tourControllers.aliasTopTours, tourControllers.getAllTour);
-router.route('/monthly-plan/:year').get(tourControllers.getMonthlyPlan);
+router
+  .route('/monthly-plan/:year')
+  .get(
+    authController.protect,
+    authController.restricTo('admin', 'lead-guide', 'guide'),
+    tourControllers.getMonthlyPlan
+  );
 
 router.route('/tour-stats').get(tourControllers.getTourStats);
 
 router
   .route('/')
-  .get(authController.protect, tourControllers.getAllTour)
-  .post(tourControllers.creatTour);
+  .get(tourControllers.getAllTour)
+  .post(
+    authController.protect,
+    authController.restricTo('admin', 'lead-guide'),
+    tourControllers.creatTour
+  );
 
 router
   .route('/:id')
   .get(tourControllers.getTour)
-  .patch(tourControllers.updateTour)
+  .patch(
+    authController.protect,
+    authController.restricTo('admin', 'lead-guide'),
+    tourControllers.updateTour
+  )
   .delete(
     authController.protect,
     authController.restricTo('admin', 'lead-guide'),
