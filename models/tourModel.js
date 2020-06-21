@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
-const slugify = require('slugify');
 const validator = require('validator');
-// const User = require('./userModel');
+const slugify = require('slugify');
 
 //Schema
 const tourSchema = new mongoose.Schema(
@@ -36,7 +35,8 @@ const tourSchema = new mongoose.Schema(
       type: Number,
       default: 4.5,
       min: [1, 'A rating must have above 1.0'],
-      max: [5, 'A rating must have below 5.0']
+      max: [5, 'A rating must have below 5.0'],
+      set: val => Math.round(val * 10) / 10 // 4.66666 46.6666 47
     },
     ratingsQuantity: {
       type: Number,
@@ -118,6 +118,13 @@ const tourSchema = new mongoose.Schema(
   }
 );
 
+//Indexing
+// tourSchema.index({ price: 1 });
+tourSchema.index({ ratingsAverage: -1, price: 1 });
+tourSchema.index({ slug: 1 });
+//Geospatial  Index
+tourSchema.index({ startLocation: '2dsphere' });
+
 tourSchema.virtual('durationWeeks').get(function() {
   return this.duration / 7;
 });
@@ -154,6 +161,7 @@ tourSchema.pre('save', function(next) {
 //QUERY MIDDLEWARE | from MongoDB
 // tourSchema.pre('find', function(next) {
 // using regular expresion execute find(), findOne(), and another else with find
+
 tourSchema.pre(/^find/, function(next) {
   this.find({ secretTour: { $ne: true } });
 
@@ -168,19 +176,18 @@ tourSchema.pre(/^find/, function() {
   });
 });
 
-tourSchema.post(/^find/, function(docs, next) {
-  console.log(`Our QUERY took ${Date.now() - this.start} milliseconds!`);
-  // console.log(docs);
-  next();
-});
+// tourSchema.post(/^find/, function(docs, next) {
+//   console.log(`Our QUERY took ${Date.now() - this.start} milliseconds!`);
+//   next();
+// });
 
 //AGGREGATION MIDDLEWARE
-tourSchema.pre('aggregate', function(next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+// tourSchema.pre('aggregate', function(next) {
+//   this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
 
-  console.log(this.pipeline());
-  next();
-});
+//   console.log(this.pipeline());
+//   next();
+// });
 
 //model
 const Tour = mongoose.model('Tour', tourSchema);

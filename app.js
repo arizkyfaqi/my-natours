@@ -1,20 +1,32 @@
+const path = require('path');
 const express = require('express');
+
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 
 const tourRouter = require('./routes/tourRoutes');
 const userRouter = require('./routes/userRoutes');
 const reviewRouter = require('./routes/reviewRoutes');
+const bookingRouter = require('./routes/bookingRouts');
+const viewRoutes = require('./routes/viewRoutes');
 const AppError = require('./utils/appError');
 const globalErrorHandler = require('./controllers/errorController');
 
+//specify pug template
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
 // 1) Global Middleware
+//Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 //Set Security HTTP headers
 app.use(helmet());
 
@@ -34,6 +46,9 @@ app.use('/api', limiter);
 
 // Body parser, reading data from body into req.body
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+//Cookie parser from data
+app.use(cookieParser());
 
 //Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
@@ -55,27 +70,19 @@ app.use(
   })
 );
 
-//Serving static files
-app.use(express.static(`${__dirname}/public`));
-
 //Test Middleware
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  // console.log(req.headers);
+  // console.log(req.cookies);
   next();
 });
 
 //2) Routs Handler
-
-//3) Routs
-// app.use(app.router);
+app.use('/', viewRoutes);
 app.use('/api/v1/tours', tourRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/reviews', reviewRouter);
-
-// app.use(app.router);
-// tourRouter.initialize(app);
-// userRouter.initialize(app);
+app.use('/api/v1/bookings', bookingRouter);
 
 //Error Handle : routs not define
 app.all('*', (req, res, next) => {

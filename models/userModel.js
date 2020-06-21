@@ -15,7 +15,7 @@ const userSchema = new mongoose.Schema({
     required: [true, 'Please provide your email!'],
     validate: [validator.isEmail, 'Please provide a valid email']
   },
-  photo: String,
+  photo: { type: String, default: 'default.jpg' },
   role: {
     type: String,
     enum: ['user', 'guide', 'lead-guide', 'admin'],
@@ -23,13 +23,13 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    require: [true, 'Please provide a password!'],
+    required: [true, 'Please provide a password!'],
     minlength: 8,
     select: false
   },
-  passwordConfrim: {
+  passwordConfirm: {
     type: String,
-    require: [true, 'Please confrim your password!'],
+    required: [true, 'Please confrim your password!'],
     validate: {
       //This only works on CREATE and SAVE
       validator: function(el) {
@@ -48,7 +48,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-//Hashing password
+// Hashing password
 userSchema.pre('save', async function(next) {
   //Only run this function if password was actually modified
   if (!this.isModified('password')) return next();
@@ -57,7 +57,7 @@ userSchema.pre('save', async function(next) {
   this.password = await bcrypt.hash(this.password, 12);
 
   //Delete passwordConfrim
-  this.passwordConfrim = undefined;
+  this.passwordConfirm = undefined;
   next();
 });
 
@@ -106,7 +106,7 @@ userSchema.methods.createPasswordResetToken = function() {
     .update(restToken)
     .digest('hex');
 
-  console.log({ restToken }, this.passwordResetToken);
+  // console.log({ restToken }, this.passwordResetToken);
 
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
 

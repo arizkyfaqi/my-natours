@@ -14,9 +14,7 @@ class APIFeatures {
 
     //Advance Filtering
     let queryStr = JSON.stringify(queryObj);
-    // console.log(queryStr);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, match => `$${match}`);
-    // console.log(queryStr);
 
     this.query = this.query.find(JSON.parse(queryStr));
 
@@ -29,7 +27,6 @@ class APIFeatures {
       //sort('pric ratingsAverage')
       // console.log(this.queryString.sort);
       const sortBy = this.queryString.sort.split(',').join(' ');
-      // console.log(sortBy);
       this.query = this.query.sort(sortBy);
     } else {
       this.query = this.query.sort('-createdAt');
@@ -47,7 +44,6 @@ class APIFeatures {
       //excluding field __v
       this.query = this.query.select('-__v');
     }
-    // console.log(this);
     return this;
   }
 
